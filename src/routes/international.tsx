@@ -1,0 +1,5 @@
+import { createFileRoute } from '@tanstack/react-router';
+import { TourListing } from '@/components/tour-listing';
+import { pageHead } from '@/lib/tours';
+export const Route = createFileRoute('/international')({ validateSearch: (search: Record<string, unknown>): { q?: string | undefined; month?: string | undefined } => ({ q: typeof search['q'] === 'string' ? search['q'] : undefined, month: typeof search['month'] === 'string' ? search['month'] : undefined }), head: () => pageHead('International tours — Explore the world', 'Explore Bali, Dubai, Maldives and Switzerland holidays, thoughtfully planned by AS Holidays.'), component: InternationalPage });
+function InternationalPage() { const search = Route.useSearch(); return <TourListing category="international" initialQuery={search.q ?? ''} month={search.month ?? ''} />; }

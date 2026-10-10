@@ -1,0 +1,17 @@
+import { useState } from 'react';
+import { ArrowUpRight, Search, MapPin } from 'lucide-react';
+import { Link } from '@tanstack/react-router';
+import { Button } from '@/components/ui/button';
+import { TourCard } from '@/components/tour-card';
+import { tours } from '@/lib/tours';
+import { filterTours } from '@/lib/tour-browsing';
+import { PackageFilters } from '@/components/package-filters';
+import { defaultPackageFilters, filterPackages } from '@/lib/package-filters';
+
+export function TourListing({ category, initialQuery = '', month = '' }: { category: 'domestic' | 'international'; initialQuery?: string; month?: string }) {
+  const [query, setQuery] = useState(initialQuery);
+  const [packageFilters, setPackageFilters] = useState({ ...defaultPackageFilters });
+  const isDomestic = category === 'domestic';
+  const filtered = filterPackages(filterTours({ category, destination: 'all', theme: 'all', query }), packageFilters);
+  return <><section className="listing-hero"><img src={isDomestic ? tours[1].image : tours[0].image} alt={isDomestic ? 'Scenic Kashmir mountains' : 'Bali lakeside temple'} /><div className="hero-shade" /><div className="site-container"><p className="eyebrow">{isDomestic ? 'CLOSER TO HOME. FAR FROM ORDINARY.' : 'A WORLD WAITING TO BE DISCOVERED.'}</p><h1>{isDomestic ? 'Rediscover incredible India.' : 'Let the world surprise you.'}</h1><p>{isDomestic ? 'From Himalayan valleys to peaceful backwaters, find your perfect Indian escape.' : 'New cultures, extraordinary landscapes, and beautiful moments beyond borders.'}</p></div></section><section className="site-container listing-section"><div className="listing-breadcrumb"><Link to="/">Home</Link><span>/</span>{isDomestic ? 'Domestic tours' : 'International tours'}</div><div className="section-heading"><div><p className="eyebrow">{isDomestic ? 'DOMESTIC HOLIDAYS' : 'INTERNATIONAL HOLIDAYS'}</p><h2>Your next journey starts here.</h2>{month && <p>Planning for {month} · Dates and availability confirmed on enquiry.</p>}</div><span className="result-count">{filtered.length} holidays to explore</span></div><PackageFilters value={packageFilters} onChange={setPackageFilters} /><div className="listing-controls"><div className="listing-search"><Search size={18} /><input aria-label="Search destinations" placeholder="Search a destination or experience" value={query} onChange={e => setQuery(e.target.value)} /></div></div>{filtered.length ? <div className="tour-grid listing-grid">{filtered.map(t => <TourCard key={t.slug} tour={t} showSchedule />)}</div> : <div className="empty-state"><MapPin size={32} /><h3>No holidays match just yet.</h3><p>Try another tour type, budget or departure range.</p><Button variant="outline" onClick={() => { setQuery(''); setPackageFilters({ ...defaultPackageFilters }); }}>Reset filters</Button></div>}<p className="prototype-note">Package types, prices and departure dates are illustrative samples. FIT tours are private, customized trips with flexible dates; group tours show sample fixed departures. Final quote, availability, taxes and inclusions are confirmed before booking.</p></section><section className="cta-band"><div className="site-container"><div><h2>Your holiday, your way.</h2><p>Can’t find the perfect fit? We can tailor a journey around you.</p></div><Button asChild variant="hero" size="lg"><Link to="/contact">Customize my trip <ArrowUpRight /></Link></Button></div></section></>;
+}
